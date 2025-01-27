@@ -1,8 +1,10 @@
 <?php
 
 header('Content-type: application/json');
-require_once '../business_methods/driversMethods.php';
+require_once '../business_methods/Drivers_methods/driversMethods.php';
 require_once '../business_methods/DB_connection.php';
+require_once '../business_methods/Consumers_methods/consumersMethods.php';
+
 
 $db = PostgreSQLConnection::getInstance();
 $connection = $db->getConnection();
@@ -13,14 +15,20 @@ $params = explode('/',$q);
 $type = $params[0];
 $id = isset($params[1]) ? $params[1] : false;
 
-
+//1
 switch ($method){
     case 'GET':{
+        if($type === 'consumers' && $id){
+            getConsumersById($connection,$id);
+            return;
+        }else if($type === 'consumers'){
+            getAllConsumers($connection);
+            return;
+        }
         if($type === 'drivers' && $id){
             getDriverById($connection,$id);
             return;
-        }
-        if($type === 'drivers'){
+        }else if($type === 'drivers'){
             getAllDrivers($connection);
             return;
         }
