@@ -44,15 +44,15 @@ class DriversRepository
         $sql = 'SELECT pricing_plan,id FROM car_extended WHERE model = :model AND brand = :brand';
         $stml = $this->connection->prepare($sql);
         $stml->execute([
-           ':model' => $model,
-           ':brand' => $brand,
+            ':model' => $model,
+            ':brand' => $brand,
         ]);
         $idAndPricing = $stml->fetch(PDO::FETCH_ASSOC);
         $id = $idAndPricing['id'];
         $newSQL = 'INSERT INTO drivers (name, phone,password, rating, status, count_trips, car) VALUES (:name, :phone,:password, :rating, :status, :count_trips, :car)';
         $stml = $this->connection->prepare($newSQL);
         $stml->execute([
-           ':name' => $name,
+            ':name' => $name,
             ':phone' => $phone,
             ':password' => $password,
             ':rating' => $rating,

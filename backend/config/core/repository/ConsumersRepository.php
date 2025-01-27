@@ -1,10 +1,6 @@
 <?php
 
-
-
-
-
-class ConsumerRepository
+class ConsumersRepository
 {
     private $connection;
 
@@ -26,5 +22,4 @@ class ConsumerRepository
         $stml->execute([':id' => $id]);
         return $stml->fetch(PDO::FETCH_ASSOC);
     }
-
 }
