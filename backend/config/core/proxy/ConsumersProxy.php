@@ -24,7 +24,7 @@ class ConsumersProxy
             ];
             return json_encode($res);
         }
-        $this->consumer->id = $id;
+        $this->consumer->setId($id);
         return $this->consumer->show();
     }
     public function create($data)
@@ -73,12 +73,12 @@ class ConsumersProxy
             ];
             return json_encode($res);
         }
-        $this->consumer->phone = $phone;
-        $this->consumer->status = 'active';
-        $this->consumer->password = $data['password'];
-        $this->consumer->rating = 0;
-        $this->consumer->name = $data['name'];
-        $this->consumer->count_trips = 0;
+        $this->consumer->setPhone($phone);
+        $this->consumer->setStatus('active');
+        $this->consumer->setPassword($data['password']);
+        $this->consumer->setRating(0);
+        $this->consumer->setName($data['name']);
+        $this->consumer->setCountTrips(0);
         return $this->consumer->create();
     }
     public function update($data)
@@ -127,13 +127,13 @@ class ConsumersProxy
             ];
             return json_encode($res);
         }
-        $this->consumer->phone = $phone;
-        $this->consumer->status = $data['status'];
-        $this->consumer->password = $data['password'];
-        $this->consumer->rating = $data['rating'];
-        $this->consumer->name = $data['name'];
-        $this->consumer->count_trips = $data['count_trips'];
-        $this->consumer->id = $data['id'];
+        $this->consumer->setPhone($phone);
+        $this->consumer->setStatus($data['status']);
+        $this->consumer->setPassword($data['password']);
+        $this->consumer->setRating($data['rating']);
+        $this->consumer->setName($data['name']);
+        $this->consumer->setCountTrips($data['count_trips']);
+        $this->consumer->setId($data['id']);
         return $this->consumer->update();
     }
     public function delete($id)
@@ -146,7 +146,7 @@ class ConsumersProxy
             ];
             return json_encode($res);
         }
-        $this->consumer->id = $id;
+        $this->consumer->setId($id);
         return $this->consumer->delete();
     }
 }

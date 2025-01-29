@@ -1,4 +1,7 @@
 <?php
+
+include_once '../config/core/methods/fetch.php';
+
 class Driver
 {
     private $connnection;
@@ -6,17 +9,177 @@ class Driver
 
     private $car_table_name = 'car_extended';
 
-    public $id;
-    public $phone;
-    public $rating;
-    public $car;
-    public $name;
-    public $password;
-    public $status;
-    public $count_trips;
+    private $id;
+    private $phone;
+    private $rating;
+    private $car;
+    private $name;
+    private $password;
+    private $status;
+    private $count_trips;
 
-    public $model;
-    public $brand;
+    private $model;
+
+    /**
+     * @return mixed
+     */
+    public function getBrand()
+    {
+        return $this->brand;
+    }
+
+    /**
+     * @param mixed $brand
+     */
+    public function setBrand($brand): void
+    {
+        $this->brand = $brand;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
+     * @param mixed $model
+     */
+    public function setModel($model): void
+    {
+        $this->model = $model;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCountTrips()
+    {
+        return $this->count_trips;
+    }
+
+    /**
+     * @param mixed $count_trips
+     */
+    public function setCountTrips($count_trips): void
+    {
+        $this->count_trips = $count_trips;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param mixed $status
+     */
+    public function setStatus($status): void
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param mixed $password
+     */
+    public function setPassword($password): void
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setName($name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCar()
+    {
+        return $this->car;
+    }
+
+    /**
+     * @param mixed $car
+     */
+    public function setCar($car): void
+    {
+        $this->car = $car;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRating()
+    {
+        return $this->rating;
+    }
+
+    /**
+     * @param mixed $rating
+     */
+    public function setRating($rating): void
+    {
+        $this->rating = $rating;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * @param mixed $phone
+     */
+    public function setPhone($phone): void
+    {
+        $this->phone = $phone;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id): void
+    {
+        $this->id = $id;
+    }
+    private $brand;
 
     public function __construct($connection)
     {
@@ -26,7 +189,7 @@ class Driver
     {
         $sql = "SELECT * FROM $this->table_name";
         $stml = $this->connnection->query($sql);
-        $result = $stml->fetchAll(PDO::FETCH_ASSOC);
+        $result = fetchAll($stml);
         if(empty($result)){
             $res = [
                 'status' => false,
@@ -45,7 +208,7 @@ class Driver
         $stml->execute([
            ':id' => $this->id
         ]);
-        $result = $stml->fetch(PDO::FETCH_ASSOC);
+        $result = fetch($stml);
         if(empty($result)){
             http_response_code(404);
             $res = [
@@ -63,7 +226,7 @@ class Driver
         $stml->execute([
            'phone' => $this->phone
         ]);
-        $uniquePhone = $stml->fetch(PDO::FETCH_ASSOC);
+        $uniquePhone = fetch($stml);
         if(!empty($uniquePhone)){
             http_response_code(400);
             $res = [
@@ -81,7 +244,7 @@ class Driver
            ':model' => $this->model,
            ':brand' => $this->brand,
         ]);
-        $car = $stml->fetch(PDO::FETCH_ASSOC);
+        $car = fetch($stml);
         if(empty($car)){
             http_response_code(404);
             $res = [
@@ -118,7 +281,7 @@ class Driver
         $stml->execute([
            ':id' => $this->id
         ]);
-        $id = $stml->fetch(PDO::FETCH_ASSOC);
+        $id = fetch($stml);
         if(empty($id)){
             http_response_code(404);
             $res = [
@@ -133,7 +296,7 @@ class Driver
             ':phone' => $this->phone,
             ':id' => $this->id,
         ]);
-        $phone = $stml->fetch(PDO::FETCH_ASSOC);
+        $phone = fetch($stml);
         if(!empty($phone)){
             http_response_code(400);
             $res = [
@@ -149,7 +312,7 @@ class Driver
            ':model' => $this->model,
            ':brand' => $this->brand,
         ]);
-        $car = $stml->fetch(PDO::FETCH_ASSOC);
+        $car = fetch($stml);
         if(empty($car)){
             http_response_code(400);
             $res = [
@@ -185,7 +348,7 @@ class Driver
         $stml->execute([
            ':id' => $this->id
         ]);
-        $id = $stml->fetch(PDO::FETCH_ASSOC);
+        $id = fetch($stml);
         if(empty($id)){
             http_response_code(404);
             $res = [

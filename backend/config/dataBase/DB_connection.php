@@ -1,16 +1,20 @@
 <?php
 
+require_once __DIR__ . '/../core/loadEnv.php';
+
+loadEnv(__DIR__ . '/../../.env');
 
 class PostgreSQLConnection {
+
 
     private static $instance = null;
     private $connection;
 
     private function __construct() {
-        $host = 'localhost';
-        $dbname = 'apidatabase';
-        $username = 'myuser';
-        $password = 'Brukva373';
+        $host = $_ENV['DB_HOST'];
+        $dbname = $_ENV['DB_NAME'];
+        $username = $_ENV['DB_USER'];
+        $password = $_ENV['DB_PASSWORD'];
 
         try {
 

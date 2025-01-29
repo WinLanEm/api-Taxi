@@ -6,19 +6,19 @@ header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
-include_once '../objects/Driver.php';
+include_once '../objects/Order.php';
 include_once '../config/dataBase/DB_connection.php';
-include_once '../config/core/proxy/DriversProxy.php';
+include_once '../config/core/proxy/OrdersProxy.php';
 
 $db = PostgreSQLConnection::getInstance();
 $connection = $db->getConnection();
 
-function index($connection)
+$id = isset($_GET['id'])? (int)$_GET['id']: 0;
+
+function show($connection,$id)
 {
-    $proxy = new DriversProxy($connection);
-    $result = $proxy->index();
+    $order = new OrdersProxy($connection);
+    $result = $order->read($id);
     echo($result);
 }
-index($connection);
-
-
+show($connection,$id);

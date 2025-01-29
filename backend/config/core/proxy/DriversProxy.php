@@ -25,7 +25,7 @@ class DriversProxy
             http_response_code(404);
             return json_encode($res);
         }
-        $this->driver->id = $id;
+        $this->driver->setId($id);
         return $this->driver->show();
     }
     public function create($data)
@@ -74,11 +74,11 @@ class DriversProxy
             ];
             return json_encode($res);
         }
-        $this->driver->phone = $phone;
-        $this->driver->model = $data['model'];
-        $this->driver->brand = $data['brand'];
-        $this->driver->name = $data['name'];
-        $this->driver->password = $data['password'];
+        $this->driver->setPhone($phone);
+        $this->driver->setModel($data['model']);
+        $this->driver->setBrand($data['brand']);
+        $this->driver->setName($data['name']);
+        $this->driver->setPassword($data['password']);
         return $this->driver->create();
     }
 
@@ -128,14 +128,14 @@ class DriversProxy
             ];
             return json_encode($res);
         }
-        $this->driver->count_trips = $data['count_trips'];
-        $this->driver->id = $data['id'];
-        $this->driver->rating = $data['rating'];
-        $this->driver->phone = $phone;
-        $this->driver->model = $data['model'];
-        $this->driver->brand = $data['brand'];
-        $this->driver->name = $data['name'];
-        $this->driver->password = $data['password'];
+        $this->driver->setCountTrips($data['count_trips']);
+        $this->driver->setId($data['id']);
+        $this->driver->setRating($data['rating']);
+        $this->driver->setPhone($phone);
+        $this->driver->setModel($data['model']);
+        $this->driver->setBrand($data['brand']);
+        $this->driver->setName($data['name']);
+        $this->driver->setPassword($data['password']);
         return $this->driver->update();
     }
     public function delete($id)
@@ -148,7 +148,7 @@ class DriversProxy
             ];
             return json_encode($res);
         }
-        $this->driver->id = $id;
+        $this->driver->setId($id);
         return $this->driver->delete();
     }
 }

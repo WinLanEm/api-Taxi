@@ -1,4 +1,7 @@
 <?php
+
+include_once '../config/core/methods/fetch.php';
+
 class Consumer
 {
     private $connection;
@@ -10,19 +13,131 @@ class Consumer
 
     private $table_name = "consumers";
 
-    public $id;
-    public $phone;
-    public $rating;
-    public $name;
-    public $password;
-    public $count_trips;
-    public $status;
+    private $id;
+    private $phone;
+    private $rating;
+    private $name;
+    private $password;
+
+    /**
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param mixed $status
+     */
+    public function setStatus($status): void
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCountTrips()
+    {
+        return $this->count_trips;
+    }
+
+    /**
+     * @param mixed $count_trips
+     */
+    public function setCountTrips($count_trips): void
+    {
+        $this->count_trips = $count_trips;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param mixed $password
+     */
+    public function setPassword($password): void
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setName($name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRating()
+    {
+        return $this->rating;
+    }
+
+    /**
+     * @param mixed $rating
+     */
+    public function setRating($rating): void
+    {
+        $this->rating = $rating;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * @param mixed $phone
+     */
+    public function setPhone($phone): void
+    {
+        $this->phone = $phone;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id): void
+    {
+        $this->id = $id;
+    }
+    private $count_trips;
+    private $status;
 
     public function index()
     {
         $sql = "SELECT * FROM $this->table_name";
         $stml = $this->connection->query($sql);
-        $result = $stml->fetchAll(PDO::FETCH_ASSOC);
+        $result = fetchAll($stml);
         if(empty($result)){
             http_response_code(404);
             $res = [
@@ -41,7 +156,7 @@ class Consumer
         $stml->execute([
             ':id' => $this->id
         ]);
-        $result = $stml->fetch(PDO::FETCH_ASSOC);
+        $result = fetch($stml);
         if(empty($result)){
             http_response_code(404);
             $res = [
@@ -60,7 +175,7 @@ class Consumer
         $stml->execute([
            ':phone' => $this->phone
         ]);
-        $result = $stml->fetch(PDO::FETCH_ASSOC);
+        $result = fetch($stml);
         if(!empty($result)){
             http_response_code(400);
             $res = [
@@ -94,7 +209,7 @@ class Consumer
         $stml->execute([
            ':id' => $this->id
         ]);
-        $id = $stml->fetch(PDO::FETCH_ASSOC);
+        $id = fetch($stml);
         if(empty($id)){
             http_response_code(404);
             $res = [
@@ -109,7 +224,7 @@ class Consumer
             ':phone' => $this->phone,
             ':id' => $this->id
         ]);
-        $result = $stml->fetch(PDO::FETCH_ASSOC);
+        $result = fetch($stml);
         if(!empty($result)){
             http_response_code(400);
             $res = [
@@ -142,7 +257,7 @@ class Consumer
         $stml->execute([
            ':id' => $this->id
         ]);
-        $id = $stml->fetch(PDO::FETCH_ASSOC);
+        $id = fetch($stml);
         if(empty($id)){
             http_response_code(404);
             $res = [
