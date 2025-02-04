@@ -1,0 +1,62 @@
+body, h1{
+    margin: 0;
+    padding: 0;
+
+
+}
+body{
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    word-spacing: 2px;
+    color: #000000;
+    font-weight: normal;
+    text-decoration: none;
+    font-style: normal;
+    font-variant: normal;
+    text-transform: none;
+    box-sizing: border-box;
+}
+input:not([type='checkbox']){
+    outline: none;
+    border:1px solid #ccc;
+}
+input:not([type='checkbox']):focus{
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+.submit-button{
+    margin:0 auto;
+    display: block;
+    margin-top: 10px;
+    height: 25px;
+    width: 100px;
+    background: orange;
+    border: none;
+}
+a{
+    font-style: normal;
+    text-decoration: none;
+    color:blue;
+}
+.error{
+
+    font-size: 10px;
+    height: 15px;
+    position: inherit;
+}
+.order-submit-button{
+    margin:0 auto;
+    display: block;
+    margin-top: 40px;
+    height: 35px;
+    width: 150px;
+    background: orange;
+    border: none;
+}
+.consumer-order-error{
+    text-align: center;
+    padding-top: 5px;
+    color:black;
+    font-size: 15px;
+}
