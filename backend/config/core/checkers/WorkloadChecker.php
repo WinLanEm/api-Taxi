@@ -47,6 +47,8 @@ class WorkloadChecker
             return $currentPrice * 1.3;
         }elseif ($this->activeConsumers > $this->activeDrivers * 1.2){
             return $currentPrice * 1.1;
+        }else{
+            return $currentPrice;
         }
     }
 }

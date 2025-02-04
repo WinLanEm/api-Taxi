@@ -13,12 +13,14 @@ include_once '../config/core/proxy/DriversProxy.php';
 
 $db = PostgreSQLConnection::getInstance();
 $connection = $db->getConnection();
+$headerToken = isset(getallheaders()['Authorization'])?getallheaders()['Authorization']:"";
+$token = str_replace('Bearer ','',$headerToken);
 
-function create($connection)
+function create($connection, $token)
 {
     $data = isset($_POST)? $_POST: "";
-    $proxy = new DriversProxy($connection);
+    $proxy = new DriversProxy($connection, $token);
     $result = $proxy->create($data);
     echo($result);
 }
-create($connection);
+create($connection, $token);

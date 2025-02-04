@@ -15,10 +15,12 @@ $db = PostgreSQLConnection::getInstance();
 $connection = $db->getConnection();
 
 $data = isset($_POST)? $_POST: "";
+$headerToken = isset(getallheaders()['Authorization'])?getallheaders()['Authorization']:"";
+$token = str_replace('Bearer ','',$headerToken);
 
-function create($connection,$data){
-    $proxy = new ConsumersProxy($connection);
+function create($connection,$data,$token){
+    $proxy = new ConsumersProxy($connection,$token);
     $result = $proxy->create($data);
     echo($result);
 }
-create($connection,$data);
+create($connection,$data,$token);

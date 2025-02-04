@@ -7,22 +7,20 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 // получаем соединение с базой данных
-include_once '../objects/Consumer.php';
+include_once '../objects/Admin.php';
 include_once '../config/dataBase/DB_connection.php';
-include_once '../config/core/proxy/ConsumersProxy.php';
+include_once '../config/core/proxy/AdminProxy.php';
+include_once '../config/core/loadEnv.php';
 
 $db = PostgreSQLConnection::getInstance();
 $connection = $db->getConnection();
-$data = file_get_contents('php://input');
-$data = json_decode($data,true);
-$headerToken = isset(getallheaders()['Authorization'])?getallheaders()['Authorization']:"";
-$token = str_replace('Bearer ','',$headerToken);
 
-
-function update($data,$connection,$token)
+$data = isset($_POST)? $_POST:"";
+$adminToken = $_ENV['ADMIN_TOKEN'];
+function createAdmin($connection,$data,$adminToken)
 {
-    $proxy = new ConsumersProxy($connection,$token);
-    $result = $proxy->update($data);
+    $proxy = new AdminProxy($connection);
+    $result = $proxy->createAdmin($adminToken,$data);
     echo($result);
 }
-update($data,$connection,$token);
+createAdmin($connection,$data,$adminToken);

@@ -4,15 +4,18 @@ class DriversProxy
 {
     private $connection;
     private $driver;
-    public function __construct($connection)
+    private $token;
+    public function __construct($connection,$token)
     {
         $this->connection = $connection;
         $this->driver = new Driver($this->connection);
+        $this->token = $token;
     }
 
     public function index()
     {
         //выполняю проверки
+        $this->driver->setToken($this->token);
         return $this->driver->index();
     }
     public function show($id)
@@ -25,6 +28,7 @@ class DriversProxy
             http_response_code(404);
             return json_encode($res);
         }
+        $this->driver->setToken($this->token);
         $this->driver->setId($id);
         return $this->driver->show();
     }
@@ -58,7 +62,7 @@ class DriversProxy
             ];
             return json_encode($res);
         }
-        if(strlen($data['password'])<9){
+        if(strlen($data['password'])<8){
             http_response_code(400);
             $res = [
                 'status' => false,
@@ -74,6 +78,7 @@ class DriversProxy
             ];
             return json_encode($res);
         }
+        $this->driver->setToken($this->token);
         $this->driver->setPhone($phone);
         $this->driver->setModel($data['model']);
         $this->driver->setBrand($data['brand']);
@@ -112,7 +117,7 @@ class DriversProxy
             ];
             return json_encode($res);
         }
-        if(strlen($data['password'])<9){
+        if(strlen($data['password'])<8){
             http_response_code(400);
             $res = [
                 'status' => false,
@@ -136,6 +141,7 @@ class DriversProxy
         $this->driver->setBrand($data['brand']);
         $this->driver->setName($data['name']);
         $this->driver->setPassword($data['password']);
+        $this->driver->setToken($this->token);
         return $this->driver->update();
     }
     public function delete($id)
@@ -148,7 +154,44 @@ class DriversProxy
             ];
             return json_encode($res);
         }
+        $this->driver->setToken($this->token);
         $this->driver->setId($id);
         return $this->driver->delete();
+    }
+    public function driverLogin($data)
+    {
+        $phone = isset($data['phone'])? $data['phone'] : "";
+        $password = isset($data['password'])? $data['password'] : "";
+        if(!$password || !$phone){
+            http_response_code(400);
+            $res = [
+                'status' => false,
+                'message' => 'Bad request'
+            ];
+            return json_encode($res);
+        }
+        if (!preg_match('/^(\+7|8|7)/', $phone)) {
+            http_response_code(400);
+            $res = [
+                'status' => false,
+                'message' => 'the phone number must start with +7, 8 or 7'
+            ];
+            return json_encode($res);
+        }
+        if (strpos($phone, '+7') === 0) {
+            $phone = '8' . substr($phone, 2);
+        }
+        if (strlen($phone) !== 11) {
+            http_response_code(400);
+            $res = [
+                'status' => false,
+                'message' => 'invalid phone'
+            ];
+            return json_encode($res);
+        }
+        $this->driver->setToken($this->token);
+        $this->driver->setPassword($password);
+        $this->driver->setPhone($phone);
+        return $this->driver->driverLogin();
     }
 }

@@ -9,11 +9,13 @@ include_once '../config/core/proxy/OrdersProxy.php';
 
 $db = PostgreSQLConnection::getInstance();
 $connection = $db->getConnection();
+$headerToken = isset(getallheaders()['Authorization'])?getallheaders()['Authorization']:"";
+$token = str_replace('Bearer ','',$headerToken);
 
-function index($connection)
+function index($connection,$token)
 {
-    $order = new OrdersProxy($connection);
+    $order = new OrdersProxy($connection,$token);
     $result = $order->index();
     echo($result);
 }
-index($connection);
+index($connection,$token);

@@ -3,15 +3,18 @@ class ConsumersProxy
 {
     private $connection;
     private $consumer;
+    private $token;
 
-    public function __construct($connection)
+    public function __construct($connection,$token)
     {
         $this->connection = $connection;
         $this->consumer = new Consumer($connection);
+        $this->token = $token;
     }
 
     public function index()
     {
+        $this->consumer->setToken($this->token);
         return $this->consumer->index();
     }
     public function show($id)
@@ -25,6 +28,7 @@ class ConsumersProxy
             return json_encode($res);
         }
         $this->consumer->setId($id);
+        $this->consumer->setToken($this->token);
         return $this->consumer->show();
     }
     public function create($data)
@@ -57,7 +61,7 @@ class ConsumersProxy
             ];
             return json_encode($res);
         }
-        if(strlen($data['password'])<9){
+        if(strlen($data['password'])<8){
             http_response_code(400);
             $res = [
                 'status' => false,
@@ -111,7 +115,7 @@ class ConsumersProxy
             ];
             return json_encode($res);
         }
-        if(strlen($data['password'])<9){
+        if(strlen($data['password'])<8){
             http_response_code(400);
             $res = [
                 'status' => false,
@@ -127,6 +131,7 @@ class ConsumersProxy
             ];
             return json_encode($res);
         }
+        $this->consumer->setToken($this->token);
         $this->consumer->setPhone($phone);
         $this->consumer->setStatus($data['status']);
         $this->consumer->setPassword($data['password']);
@@ -146,7 +151,48 @@ class ConsumersProxy
             ];
             return json_encode($res);
         }
+        $this->consumer->setToken($this->token);
         $this->consumer->setId($id);
         return $this->consumer->delete();
+    }
+    public function consumerLogin($data)
+    {
+        $phone = isset($data['phone'])? $data['phone'] : "";
+        $password = isset($data['password'])? $data['password'] : "";
+        if(!$password || !$phone){
+            http_response_code(400);
+            $res = [
+                'status' => false,
+                'message' => 'Bad request'
+            ];
+            return json_encode($res);
+        }
+        if (!preg_match('/^(\+7|8|7)/', $phone)) {
+            http_response_code(400);
+            $res = [
+                'status' => false,
+                'message' => 'the phone number must start with +7, 8 or 7'
+            ];
+            return json_encode($res);
+        }
+        if (strpos($phone, '+7') === 0) {
+            $phone = '8' . substr($phone, 2);
+        }
+        if (strlen($phone) !== 11) {
+            http_response_code(400);
+            $res = [
+                'status' => false,
+                'message' => 'invalid phone'
+            ];
+            return json_encode($res);
+        }
+        $this->consumer->setToken($this->token);
+        $this->consumer->setPassword($password);
+        $this->consumer->setPhone($phone);
+        return $this->consumer->consumerLogin();
+    }
+    public function checkRole()
+    {
+        return $this->consumer->checkRole();
     }
 }

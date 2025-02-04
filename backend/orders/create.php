@@ -1,5 +1,8 @@
 <?php
 
+
+header("Access-Control-Allow-Origin: http://localhost:3000"); // Укажите ваш фронтенд
+header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
@@ -13,14 +16,18 @@ include_once '../config/core/proxy/OrdersProxy.php';
 
 $db = PostgreSQLConnection::getInstance();
 $connection = $db->getConnection();
+$consumer = $_SESSION['consumer']['id'];
 
 $data = isset($_POST)? $_POST: "";
+$headerToken = isset(getallheaders()['Authorization'])?getallheaders()['Authorization']:"";
+$token = str_replace('Bearer ','',$headerToken);
 
-function create($connection,$data)
+
+function create($connection,$data,$token)
 {
-    $order = new OrdersProxy($connection);
+    $order = new OrdersProxy($connection,$token);
     $result = $order->create($data);
     echo($result);
 }
-create($connection,$data);
+create($connection,$data,$token);
 

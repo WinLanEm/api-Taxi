@@ -16,11 +16,15 @@ $connection = $db->getConnection();
 
 $data = file_get_contents('php://input');
 $data = json_decode($data,true);
+$headerToken = isset(getallheaders()['Authorization'])?getallheaders()['Authorization']:"";
+$token = str_replace('Bearer ','',$headerToken);
 
-function update($connection,$data)
+
+
+function update($connection,$data,$token)
 {
-    $order = new OrdersProxy($connection);
+    $order = new OrdersProxy($connection,$token);
     $result = $order->update($data);
     echo($result);
 }
-update($connection,$data);
+update($connection,$data,$token);

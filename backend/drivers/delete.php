@@ -17,10 +17,12 @@ $connection = $db->getConnection();
 $data = file_get_contents('php://input');
 $data = json_decode($data,true);
 $id = isset($data['id'])? $data['id']: "";
+$headerToken = isset(getallheaders()['Authorization'])?getallheaders()['Authorization']:"";
+$token = str_replace('Bearer ','',$headerToken);
 
-function delete($connection,$id){
-    $proxy = new DriversProxy($connection);
+function delete($connection,$id, $token){
+    $proxy = new DriversProxy($connection, $token);
     $result = $proxy->delete($id);
     echo($result);
 }
-delete($connection,$id);
+delete($connection,$id, $token);

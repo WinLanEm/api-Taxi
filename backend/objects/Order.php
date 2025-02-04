@@ -15,6 +15,25 @@ class Order
     private $table_consumers = 'consumers';
     private $table_drivers = 'drivers';
     private $id;
+
+    private $token;
+
+    /**
+     * @return mixed
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param mixed $token
+     */
+    public function setToken($token): void
+    {
+        $this->token = $token;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -134,6 +153,20 @@ class Order
 
     public function index()
     {
+        $sql = "SELECT * FROM admin WHERE token = :token";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+            ':token' => $this->token
+        ]);
+        $result = $stml->fetch(PDO::FETCH_ASSOC);
+        if(empty($result)){
+            http_response_code(400);
+            $res = [
+                'status' => false,
+                'message' => 'invalid token'
+            ];
+            return json_encode($res);
+        }
         $sql = "SELECT * FROM $this->table_name";
         $stml = $this->connection->query($sql);
         $result = fetchAll($stml);
@@ -149,6 +182,21 @@ class Order
     }
     public function read()
     {
+        $sql = "SELECT * FROM admin WHERE token = :token";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+            ':token' => $this->token
+        ]);
+        $result = $stml->fetch(PDO::FETCH_ASSOC);
+        if(empty($result)){
+            http_response_code(400);
+            $res = [
+                'status' => false,
+                'message' => 'invalid token'
+            ];
+            return json_encode($res);
+        }
+
         $sql = "SELECT * FROM $this->table_name WHERE id = :id";
         $stml = $this->connection->prepare($sql);
         $stml->execute([
@@ -167,6 +215,21 @@ class Order
     }
     public function create()
     {
+        $sql = "SELECT * FROM admin WHERE token = :token";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+            ':token' => $this->token
+        ]);
+        $result = $stml->fetch(PDO::FETCH_ASSOC);
+        if(empty($result)){
+            http_response_code(400);
+            $res = [
+                'status' => false,
+                'message' => 'invalid token'
+            ];
+            return json_encode($res);
+        }
+
         $sql = "SELECT * FROM $this->table_consumers WHERE id = :id";
         $stml = $this->connection->prepare($sql);
         $stml->execute([
@@ -221,6 +284,21 @@ class Order
     }
     public function update()
     {
+        $sql = "SELECT * FROM admin WHERE token = :token";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+            ':token' => $this->token
+        ]);
+        $result = $stml->fetch(PDO::FETCH_ASSOC);
+        if(empty($result)) {
+            http_response_code(400);
+            $res = [
+                'status' => false,
+                'message' => 'invalid token'
+            ];
+            return json_encode($res);
+        }
+
         $sql = "SELECT * FROM $this->table_name WHERE id = :id";
         $stml = $this->connection->prepare($sql);
         $stml->execute([
@@ -292,6 +370,21 @@ class Order
     }
     public function delete()
     {
+        $sql = "SELECT * FROM admin WHERE token = :token";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+            ':token' => $this->token
+        ]);
+        $result = $stml->fetch(PDO::FETCH_ASSOC);
+        if(empty($result)){
+            http_response_code(400);
+            $res = [
+                'status' => false,
+                'message' => 'invalid token'
+            ];
+            return json_encode($res);
+        }
+
         $sql = "SELECT * FROM $this->table_name WHERE id = :id";
         $stml = $this->connection->prepare($sql);
         $stml->execute([
@@ -319,6 +412,21 @@ class Order
     }
     public function getConsumer()
     {
+        $sql = "SELECT * FROM admin WHERE token = :token";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+            ':token' => $this->token
+        ]);
+        $result = $stml->fetch(PDO::FETCH_ASSOC);
+        if(empty($result)){
+            http_response_code(400);
+            $res = [
+                'status' => false,
+                'message' => 'invalid token'
+            ];
+            return json_encode($res);
+        }
+
         $sql = "SELECT * FROM $this->table_name WHERE id = :id";
         $stml = $this->connection->prepare($sql);
         $stml->execute([
@@ -360,6 +468,21 @@ class Order
     }
     public function getDriver()
     {
+        $sql = "SELECT * FROM admin WHERE token = :token";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+            ':token' => $this->token
+        ]);
+        $result = $stml->fetch(PDO::FETCH_ASSOC);
+        if(empty($result)){
+            http_response_code(400);
+            $res = [
+                'status' => false,
+                'message' => 'invalid token'
+            ];
+            return json_encode($res);
+        }
+
         $sql = "SELECT * FROM $this->table_name WHERE id = :id";
         $stml = $this->connection->prepare($sql);
         $stml->execute([

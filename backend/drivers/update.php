@@ -16,9 +16,11 @@ $connection = $db->getConnection();
 $data = file_get_contents('php://input');
 $data = json_decode($data,true);
 $id = isset($data['id'])? $data['id']: "";
-function update($connection,$data){
-    $proxy = new DriversProxy($connection);
+$headerToken = isset(getallheaders()['Authorization'])?getallheaders()['Authorization']:"";
+$token = str_replace('Bearer ','',$headerToken);
+function update($connection,$data,$token){
+    $proxy = new DriversProxy($connection,$token);
     $result = $proxy->update($data);
     echo $result;
 }
-update($connection,$data);
+update($connection,$data,$token);

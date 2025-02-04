@@ -14,11 +14,13 @@ include_once '../config/core/proxy/ConsumersProxy.php';
 $db = PostgreSQLConnection::getInstance();
 $connection = $db->getConnection();
 $id = isset($_GET['id'])? $_GET['id']: "";
+$headerToken = isset(getallheaders()['Authorization'])?getallheaders()['Authorization']:"";
+$token = str_replace('Bearer ','',$headerToken);
 
-function show($id,$connection)
+function show($id,$connection,$token)
 {
-    $proxy = new ConsumersProxy($connection);
+    $proxy = new ConsumersProxy($connection,$token);
     $result = $proxy->show($id);
     echo($result);
 }
-show($id,$connection);
+show($id,$connection,$token);

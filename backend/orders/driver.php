@@ -12,14 +12,17 @@ include_once '../config/core/proxy/OrdersProxy.php';
 
 $db = PostgreSQLConnection::getInstance();
 $connection = $db->getConnection();
+$headerToken = isset(getallheaders()['Authorization'])?getallheaders()['Authorization']:"";
+$token = str_replace('Bearer ','',$headerToken);
+
 
 $id = isset($_GET['id'])? $_GET['id'] : 0;
 $driver_id = isset($_GET['driver_id'])? $_GET['driver_id'] : 0;
 
-function getDriver($connection,$id,$driver_id)
+function getDriver($connection,$id,$driver_id,$token)
 {
-    $order = new OrdersProxy($connection);
+    $order = new OrdersProxy($connection,$token);
     $result = $order->getDriver($id,$driver_id);
     echo($result);
 }
-getDriver($connection,$id,$driver_id);
+getDriver($connection,$id,$driver_id,$token);

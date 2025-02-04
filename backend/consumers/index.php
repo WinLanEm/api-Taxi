@@ -9,10 +9,11 @@ include_once '../config/core/proxy/ConsumersProxy.php';
 
 $db = PostgreSQLConnection::getInstance();
 $connection = $db->getConnection();
-
-function index($connection){
-    $proxy = new ConsumersProxy($connection);
+$headerToken = isset(getallheaders()['Authorization'])?getallheaders()['Authorization']:"";
+$token = str_replace('Bearer ','',$headerToken);
+function index($connection,$token){
+    $proxy = new ConsumersProxy($connection,$token);
     $result = $proxy->index();
     echo $result;
 }
-index($connection);
+index($connection,$token);
