@@ -36,20 +36,6 @@ class CalculatePriceProxy
     }
     public function validate($token)
     {
-        $sql = "SELECT * FROM admin WHERE token = :token";
-        $stml = $this->connection->prepare($sql);
-        $stml->execute([
-           ':token' => $token
-        ]);
-        $result = $stml->fetch(PDO::FETCH_ASSOC);
-        if(empty($result)){
-            http_response_code(400);
-            $res = [
-                'status' => false,
-                'message' => 'invalid token'
-            ];
-            return json_encode($res);
-        }
         if($this->weather !== "warm" && $this->weather !== "cold" && $this->weather !== "rainy"  && $this->weather !== "snowy"){
             http_response_code(400);
             $res = [
@@ -67,7 +53,7 @@ class CalculatePriceProxy
             return json_encode($res);
         }
 
-        if(!$this->activeDrivers || !$this->activeConsumers || !$this->kilometers || $this->hasKids === null){
+        if(!$this->kilometers || $this->hasKids === null){
             http_response_code(400);
             $res = [
                 'status' => false,

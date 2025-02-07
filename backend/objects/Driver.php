@@ -26,6 +26,23 @@ class Driver
     {
         $this->token = $token;
     }
+    private $location;
+
+    /**
+     * @return mixed
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param mixed $location
+     */
+    public function setLocation($location): void
+    {
+        $this->location = $location;
+    }
 
     private $id;
     private $phone;
@@ -236,20 +253,6 @@ class Driver
     }
     public function show()
     {
-        $sql = "SELECT * FROM admin WHERE token = :token";
-        $stml = $this->connection->prepare($sql);
-        $stml->execute([
-            ':token' => $this->token
-        ]);
-        $result = $stml->fetch(PDO::FETCH_ASSOC);
-        if(empty($result)){
-            http_response_code(400);
-            $res = [
-                'status' => false,
-                'message' => 'invalid token'
-            ];
-            return json_encode($res);
-        }
         $sql = "SELECT * FROM $this->table_name WHERE id = :id";
         $stml = $this->connection->prepare($sql);
         $stml->execute([
@@ -324,27 +327,13 @@ class Driver
     }
     public function update()
     {
-        $sql = "SELECT * FROM admin WHERE token = :token";
-        $stml = $this->connection->prepare($sql);
-        $stml->execute([
-            ':token' => $this->token
-        ]);
-        $result = $stml->fetch(PDO::FETCH_ASSOC);
-        if(empty($result)){
-            http_response_code(400);
-            $res = [
-                'status' => false,
-                'message' => 'invalid token'
-            ];
-            return json_encode($res);
-        }
         $sql = "SELECT * FROM $this->table_name WHERE id = :id";
         $stml = $this->connection->prepare($sql);
         $stml->execute([
            ':id' => $this->id
         ]);
-        $id = fetch($stml);
-        if(empty($id)){
+        $driver = fetch($stml);
+        if(empty($driver)){
             http_response_code(404);
             $res = [
                 'status' => false,
@@ -352,51 +341,18 @@ class Driver
             ];
             return json_encode($res);
         }
-        $sql = "SELECT * FROM $this->table_name WHERE phone = :phone AND id <> :id";
+        $sql = "UPDATE $this->table_name SET location = :location, phone = :phone, rating = :rating, car = :car, name = :name, password = :password, status = :status, count_trips = :count_trips WHERE id = :id";
         $stml = $this->connection->prepare($sql);
         $stml->execute([
-            ':phone' => $this->phone,
-            ':id' => $this->id,
-        ]);
-        $phone = fetch($stml);
-        if(!empty($phone)){
-            http_response_code(400);
-            $res = [
-                'status' => false,
-                'message' => 'Enter unique phone'
-            ];
-            return json_encode($res);
-        }
-        $this->status = 'inactive';
-        $sql = "SELECT id FROM $this->car_table_name WHERE model = :model AND brand = :brand";
-        $stml = $this->connection->prepare($sql);
-        $stml->execute([
-           ':model' => $this->model,
-           ':brand' => $this->brand,
-        ]);
-        $car = fetch($stml);
-        if(empty($car)){
-            http_response_code(400);
-            $res = [
-                'status' => false,
-                'message' => 'Car not found'
-            ];
-            return json_encode($res);
-        }
-        $carId = $car['id'];
-        $this->car = $carId;
-        $hashPassword = password_hash($this->password,PASSWORD_DEFAULT);
-        $sql = "UPDATE $this->table_name SET phone = :phone, rating = :rating, car = :car, name = :name, password = :password, status = :status, count_trips = :count_trips WHERE id = :id";
-        $stml = $this->connection->prepare($sql);
-        $stml->execute([
-           ':phone' => $this->phone,
-            ':rating' => $this->rating,
-            ':car' => $this->car,
-            ':name' => $this->name,
-            ':password' => $hashPassword,
-            ':status' => $this->status,
-            ':count_trips' => $this->count_trips,
-            ':id' => $this->id
+           ':phone' => $driver['phone'],
+            ':rating' => $driver['rating'],
+            ':car' => $driver['car'],
+            ':name' => $driver['name'],
+            ':password' => $driver['password'],
+            ':status' => $driver['status'],
+            ':count_trips' => $driver['count_trips'],
+            ':id' => $driver['id'],
+            ':location' => $this->location
         ]);
         $res = [
             'status' => true,
@@ -475,6 +431,158 @@ class Driver
             'status' => true,
             'message' => 'success'
         ];
+        return json_encode($res);
+    }
+    public function statusChange()
+    {
+        $sql = "SELECT * FROM $this->table_name WHERE id = :id";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+            ':id' => $this->id
+        ]);
+        $driver = fetch($stml);
+        if(empty($driver)){
+            http_response_code(404);
+            $res = [
+                'status' => false,
+                'message' => 'Driver not found'
+            ];
+            return json_encode($res);
+        }
+        $sql = "UPDATE $this->table_name SET location = :location, phone = :phone, rating = :rating, car = :car, name = :name, 
+                 password = :password, status = :status, count_trips = :count_trips WHERE id = :id";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+            ':phone' => $driver['phone'],
+            ':rating' => $driver['rating'],
+            ':car' => $driver['car'],
+            ':name' => $driver['name'],
+            ':password' => $driver['password'],
+            ':status' => $this->status,
+            ':count_trips' => $driver['count_trips'],
+            ':id' => $driver['id'],
+            ':location' => $driver['location']
+        ]);
+        $res = [
+            'status' => true,
+            'message' => $this->status,
+        ];
+        return json_encode($res);
+    }
+    public function getOrder()
+    {
+        $sql = "SELECT * FROM $this->table_name WHERE id = :id";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+            ':id' => $this->id
+        ]);
+        $result = fetch($stml);
+        if(empty($result)){
+            http_response_code(404);
+            $res = [
+                'status' => false,
+                'message' => 'Driver not found'
+            ];
+            return json_encode($res);
+        }
+        $orderId = $result['order_id'];
+        $sql = "SELECT * FROM orders WHERE id = :order_id";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+           ':order_id' => $orderId
+        ]);
+        $orderData = fetch($stml);
+        $sql = "UPDATE orders SET consumer_id = :consumer_id, driver_id = :driver_id, trip_price = :trip_price,
+                  payment_method = :payment_method
+                  ,payment = :payment,is_completed = :is_completed,
+                   waiting_price = :waiting_price,source_address = :source_address,final_address = :final_address
+                ,city = :city,status = :status WHERE id = :order_id";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+            'order_id' => $orderData['id'],
+            'consumer_id' => $orderData['consumer_id'],
+            'driver_id' => $this->id,
+            'trip_price' => $orderData['trip_price'],
+            'payment_method' => $orderData['payment_method'],
+            'payment' => 'false',
+            'is_completed' => 'false',
+            'waiting_price' => $orderData['waiting_price'],
+            'source_address' => $orderData['source_address'],
+            'final_address' => $orderData['final_address'],
+            'city' => $orderData['city'],
+            'status' => 'active',
+        ]);
+        return json_encode($orderData);
+    }
+    public function cancelOrder()
+    {
+
+        $sql = 'SELECT * FROM orders WHERE driver_id = :driver_id AND status = :status';
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+           ':driver_id' => $this->id,
+           ':status' => 'active',
+        ]);
+        $result = fetch($stml);
+        $sql = "UPDATE orders SET consumer_id = :consumer_id, driver_id = :driver_id, trip_price = :trip_price,
+                  payment_method = :payment_method
+                  ,payment = :payment,is_completed = :is_completed,
+                   waiting_price = :waiting_price,source_address = :source_address,final_address = :final_address
+                ,city = :city,status = :status WHERE id = :order_id";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+            'order_id' => $result['id'],
+            'consumer_id' => $result['consumer_id'],
+            'driver_id' => null,
+            'trip_price' => $result['trip_price'],
+            'payment_method' => $result['payment_method'],
+            'payment' => 'false',
+            'is_completed' => 'false',
+            'waiting_price' => $result['waiting_price'],
+            'source_address' => $result['source_address'],
+            'final_address' => $result['final_address'],
+            'city' => $result['city'],
+            'status' => 'active',
+        ]);
+        $sql = "SELECT * FROM $this->table_name WHERE id = :id";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+            ':id' => $this->id
+        ]);
+        $driver = fetch($stml);
+        if(empty($driver)){
+            http_response_code(404);
+            $res = [
+                'status' => false,
+                'message' => 'Driver not found'
+            ];
+            return json_encode($res);
+        }
+        return json_encode($driver);
+        $sql = "SELECT * FROM $this->table_name WHERE id = :id";
+        $stml = $this->connection->prepare($sql);
+        $stml->execite([
+           ':id' => $result['driver_id']
+        ]);
+        $res = [
+            'status' => true,
+            'message' => 'order canceled'
+        ];
+        $sql = "UPDATE $this->table_name SET location = :location, phone = :phone, rating = :rating, car = :car, name = :name, 
+                 password = :password, status = :status, count_trips = :count_trips, order_id = :order_id WHERE id = :id";
+        $stml = $this->connection->prepare($sql);
+        $stml->execute([
+            ':phone' => $driver['phone'],
+            ':rating' => $driver['rating'],
+            ':car' => $driver['car'],
+            ':name' => $driver['name'],
+            ':password' => $driver['password'],
+            ':status' => $driver['status'],
+            ':count_trips' => $driver['count_trips'],
+            ':id' => $driver['id'],
+            ':location' => $driver['location'],
+            ':order_id' => null,
+        ]);
         return json_encode($res);
     }
 }

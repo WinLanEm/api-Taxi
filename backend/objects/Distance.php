@@ -65,6 +65,7 @@ class Distance
             return json_encode($res);
         }
         $sourceQuery = "$this->city $this->souce_address";
+
         $sourceQuery = mb_convert_encoding($sourceQuery, 'UTF-8');
         $sourceQuery = urlencode($sourceQuery);
         $finalQuery = "$this->city $this->final_address";
@@ -81,7 +82,6 @@ class Distance
 
         $sourceRes = file_get_contents($sourceUrl,false,$context);
         $finalRes = file_get_contents($finalUrl,false,$context);
-
         $sourceData = json_decode($sourceRes);
         $finalData = json_decode($finalRes);
 

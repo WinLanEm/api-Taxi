@@ -18,21 +18,6 @@ class Workload
 
     public function index()
     {
-        $sql = "SELECT * FROM admin WHERE token = :token";
-        $stml = $this->connection->prepare($sql);
-        $stml->execute([
-            ':token' => $this->token
-        ]);
-        $result = $stml->fetch(PDO::FETCH_ASSOC);
-        if(empty($result)){
-            http_response_code(400);
-            $res = [
-                'status' => false,
-                'message' => 'invalid token'
-            ];
-            return json_encode($res);
-        }
-
         $sql = "SELECT * FROM $this->table_drivers WHERE status = 'active'";
         $stml = $this->connection->query($sql);
         $activeDrivers = fetchAll($stml);

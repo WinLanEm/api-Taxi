@@ -58,18 +58,18 @@ class Weather
             $newTemp = (str_replace("-", '', $temp));
             $coldTemp = (int)($newTemp);
             if($coldTemp > 5 && $precip_mm > 10){
-                $result = ['weather' => 'snowy'];
+                $result = ['status' => true ,'weather' => 'snowy'];
                 return json_encode($result);
             }elseif ($coldTemp > 10 && $wind > 13 && $precip_mm < 2){
-                $result = ['weather' => 'cold'];;
+                $result = ['status' => true ,'weather' => 'cold'];;
                 return json_encode($result);
             }
         }
         if($precip_mm > 8 && $temp > 0){
-            $result = ['weather' => 'rainy'];;
+            $result = ['status' => true ,'weather' => 'rainy'];;
             return json_encode($result);
         } else{
-            $result = ['weather' => 'warm'];;
+            $result = ['status' => true ,'weather' => 'warm'];;
             return json_encode($result);
         }
     }
