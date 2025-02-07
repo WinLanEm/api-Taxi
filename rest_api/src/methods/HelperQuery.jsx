@@ -1,17 +1,16 @@
 
+
+let anyChecked = false
+let carClass = "";
 export const buttonActive = () => {
+
     setTimeout(() => {
-        const button = document.querySelector('.order-submit-button')
-        const finalAddress = document.querySelector('.final-address')
-        const sourceAddress = document.querySelector('.source-address')
         const economyCheckbox = document.querySelector('.economyCheckbox')
         const businessCheckbox = document.querySelector('.businessCheckbox')
         const comfortCheckbox = document.querySelector('.comfortCheckbox')
-        let carClass = "";
         let isEconomomy = false
         let isComfort = false
         let isBusiness = false
-        let anyChecked = false
         economyCheckbox.addEventListener('change',function(){
             isEconomomy = true
             carClass = 'economy'
@@ -42,17 +41,22 @@ export const buttonActive = () => {
             economyCheckbox.checked = false
 
         })
-
-        const error = document.querySelector('.error')
-        button.addEventListener('click',(() => {
-            if(!finalAddress || !sourceAddress || !anyChecked){
-                error.textContent = 'Выберите все параметры'
-            }else if(finalAddress && sourceAddress && anyChecked){
-                error.textContent = ""
-                makeOrder(carClass,finalAddress.value,sourceAddress.value)
-            }
-        }))
     },1000)
+}
+
+export const useButton = () => {
+    const button = document.querySelector('.order-submit-button')
+    const finalAddress = document.querySelector('.final-address')
+    const sourceAddress = document.querySelector('.source-address')
+    const error = document.querySelector('.error')
+    button.addEventListener('click',(() => {
+        if(!finalAddress || !sourceAddress || !anyChecked){
+            error.textContent = 'Выберите все параметры'
+        }else if(finalAddress && sourceAddress && anyChecked){
+            error.textContent = ""
+            makeOrder(carClass,finalAddress.value,sourceAddress.value)
+        }
+    }))
 }
 
 const helper = (query,parent,helperDiv) => {
@@ -64,6 +68,7 @@ const helper = (query,parent,helperDiv) => {
             parent.style.display = 'none'
         }
     })
+    const city = document.querySelector('.city').value
     const token = 'bb0deb05ec3f11946014ff516b96e85578ff31a7'
     fetch("http://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address",{
         method: 'POST',
@@ -73,17 +78,29 @@ const helper = (query,parent,helperDiv) => {
             "Accept": "application/json",
             "Authorization": "Token " + token
         },
-        body:JSON.stringify({query:query})
+        body:JSON.stringify({query:city + " " + query})
     }).then(response => response.json())
         .then(data => {
             parent.style.display = 'block'
             parent.innerHTML = ``
             data.suggestions.forEach((item) => {
-                const value = item.value
-                const divText = `${value}`
+                const street = item.data.street_with_type
+                const houseType = item.data.house_type_full
+                const houseNumber = item.data.house
+                const hostalCode = item.data.postal_code
+                if(!street || !houseType || !houseNumber){
+                    return
+                }
+                const duplicate = document.querySelectorAll('.final-click')
+                duplicate.forEach((el) => {
+                    if(el.id === houseNumber){
+                        el.remove()
+                    }
+                })
                 parent.innerHTML += `
-                <div class="final-click">${divText}</div>
+                <div id='${houseNumber}' class="final-click">${street}, ${houseType} ${houseNumber}</div>
                 `
+
             })
         })
 }
@@ -103,7 +120,7 @@ export const HelperQuery = () => {
         })
     },1000)
 }
-async function makeOrder(carClass,sourceAddress,finalAddress){
+export async function makeOrder(carClass,sourceAddress,finalAddress){
     let city = sourceAddress.split(',')
     let finalCity = ''
     let megaFinalCity = ''
@@ -117,28 +134,45 @@ async function makeOrder(carClass,sourceAddress,finalAddress){
     }else{
         megaFinalCity = finalCity
     }
-
-    translateText(megaFinalCity,'ru','en')
+    const GEOCity = document.querySelector('.city').value
+    const encodeGEOCity = encodeURIComponent(GEOCity)
+    const hasKidsInput = document.querySelector('.has-kids')
+    const hasKids = hasKidsInput.checked
+    const orderPrice = document.querySelector('.order-price')
+    orderPrice.style.display = 'block'
+    orderPrice.textContent = 'Идет рассчет стоимости...'
+    translateText(encodeGEOCity,'ru','en')
         .then(enCity => {
-            const data = {
-                carClass:carClass,
-                sourceAddress:sourceAddress,
-                finalAddress:finalAddress,
-                city:enCity,
-            }
+
+            getWeather(enCity).then(item => {
+                let data = {
+                    car_class:carClass.replaceAll(/\s+/g, ''),
+                    has_kids:hasKids,
+                }
+                data.weather = item.weather? item.weather:'warm'
+                workLoad().then(activeUsers => {
+                    data.active_drivers = activeUsers? activeUsers.drivers:1
+                    data.active_consumers = activeUsers?activeUsers.consumers:1
+                    const validateSource = sourceAddress.replace('дом', '')
+                    const validateFinal = finalAddress.replace('дом','')
+                    getKilometers(validateSource,validateFinal,GEOCity).then(distance => {
+                        data.kilometers = distance? distance:0
+                        calculatePrice(data).then(price => {
+                            if(price === null){
+                                orderPrice.textContent = 'Сервис временно не доступен'
+                                return
+                            }
+                            orderPrice.textContent = price + '₽'
+                            const call = document.querySelector('.call-car-button')
+                            call.style.display = 'block'
+                            call.id = price
+                        })
+                    })
+                })
+
+            })
         })
-    getWeather('Moscow').then(data => {
-        console.log(data)
-    })
 
-
-    // await fetch('http://127.0.0.1/api/backend/weather',{
-    //     method:"GET",
-    // }).then((response) => {
-    //     return response.json()
-    // }).then(data => {
-    //     console.log(data)
-    // })
 }
 async function translateText(text, sourceLang = "ru", targetLang = "en") {
     const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
@@ -158,23 +192,87 @@ async function translateText(text, sourceLang = "ru", targetLang = "en") {
 }
 async function getWeather(city){
     const encodedCity = encodeURIComponent(city)
-    const url = `http://127.0.0.1/api/backend/weather?city=${encodedCity}`
+    const url = `http://127.0.0.1/api/backend/weather/?city=${encodedCity}`
     try{
         const response = await fetch(url,{
             method:'GET',
             headers:{
                 'Accept': 'application/json'
-            }
+            },
+            credentials:'include',
         })
         if(!response.ok){
             throw new Error(`Ошибка HTTP: ${response.status}`)
         }
         const result = await response.json()
-        console.log(result)
         return result
     }catch (error){
         console.error('Ошибка при запросе погоды', error)
         return null
     }
 }
-
+async function workLoad(){
+    const url = 'http://127.0.0.1/api/backend/workload/index.php'
+    try{
+        const response = await fetch(url,{
+            headers:{
+                'Accept':'application/json',
+            },
+            method:"GET",
+            credentials:'include',
+        })
+        if(!response.ok){
+            throw new Error(`Ошибка HTTP: ${response.status}`)
+        }
+        const result = await response.json()
+        return result
+    }catch (error){
+        console.error('Ошибка при запросе загруженности', error)
+        return null
+    }
+}
+async function getKilometers(sourceAddress,finalAddress,city){
+    const encodeSource = encodeURIComponent(sourceAddress)
+    const encodeFinal = encodeURIComponent(finalAddress)
+    const encodeCity = encodeURIComponent(city);
+    const url = `http://127.0.0.1/api/backend/kilometers/index.php?source_address=${encodeSource}&final_address=${encodeFinal}&city=${encodeCity}`
+    try{
+        const response = await fetch(url,{
+            'headers':{
+                'Accept':'application/json'
+            },
+            credentials:'include',
+            method:"GET",
+        })
+        if(!response.ok){
+            throw new Error(`Ошибка HTTP: ${response.status}`)
+        }
+        const result = await response.json()
+        return result
+    }catch (error){
+        console.error('Ошибка при запросе расстояния', error)
+        return null
+    }
+}
+async function calculatePrice(data){
+    const url = `http://127.0.0.1/api/backend/price/index.php?weather=${data.weather}&car_class=${data.car_class}
+    &active_drivers=${data.active_drivers}&active_consumers=${data.active_consumers}&kilometers=${data.kilometers}
+    &has_kids=${data.has_kids}`
+    try{
+        const response = await fetch(url,{
+            headers:{
+                'Accept':'application/json'
+            },
+            credentials:'include',
+            method:"GET",
+        })
+        if(!response.ok){
+            throw new Error(`Ошибка HTTP: ${response.status}`)
+        }
+        const result = await response.json()
+        return result
+    }catch (error){
+        console.error('Ошибка при запросе цены', error)
+        return null
+    }
+}

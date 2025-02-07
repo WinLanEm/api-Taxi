@@ -1,14 +1,13 @@
 import '../page_css/Basic.css'
-import {HelperQuery,buttonActive} from "../methods/HelperQuery";
-import {GeocodeMap} from "../methods/GeocodeMap";
+import {HelperQuery,buttonActive,useButton} from "../methods/HelperQuery";
 import {useEffect} from "react";
-import {useState} from "react";
 import {checkRole} from "../methods/ConsumerAuthorizeMethod";
+import {getGEO} from "../methods/GetGEO";
+import {callTaxi} from "../methods/CallTaxi";
 
 export const HomePage = () => {
+    getGEO()
     checkRole();
-    const [userData, setUserData] = useState(null);
-    const [error, setError] = useState(null);
     useEffect(() => {
         buttonActive()
     },[])
@@ -18,7 +17,10 @@ export const HomePage = () => {
 
             <div className="order-form">
                 <h1>Выберите место на карте или введите адресс</h1>
-                <GeocodeMap/>
+                <div className='city-div'>
+                    <input name='city' className='city' placeholder='Введите город'/>
+                </div>
+
                 <div className="address">
                     <input name="source-address" placeholder="Откуда едете" className="source-address"/>
                     <input name="final-address" placeholder="Куда едете" className="final-address"/>
@@ -45,7 +47,23 @@ export const HomePage = () => {
                         <span></span> Комфорт
                     </label>
                 </div>
-                <button className="order-submit-button">Вызвать машину</button>
+                <div>
+                    <label className="custom-checkbox kids">
+                        <input type='checkbox' className="has-kids"/>
+                        <span></span> Дети
+                    </label>
+                </div>
+                <div className='payment-method'>
+                    <label>Выберите метод оплаты</label><br/>
+                    <select className='payment-select'>
+                        <option>Наличные</option>
+                        <option>Банковская карта</option>
+                    </select>
+                </div>
+                <button className="order-submit-button" onClick={useButton}>Рассчитать цену</button>
+                <div className='order-price'></div>
+                <button className="call-car-button order-submit-button" id='' onClick={callTaxi}>Вызвать машину</button>
+                <div className='consumer-order-data'></div>
                 <div className="error consumer-order-error"></div>
                 <HelperQuery/>
             </div>

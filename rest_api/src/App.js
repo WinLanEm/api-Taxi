@@ -11,6 +11,7 @@ import {DriverRegister} from './pages/DriverRegister';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import {DriverHome} from "./pages/DriverHome";
 import {ConsumerOrder} from "./pages/ConsumerOrder";
+import {CallTaxi} from './pages/CallTaxi'
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/driver_register" element={<DriverRegister/>}/>
           <Route path='/driver_home' element={<DriverHome/>}/>
           <Route path="/consumer_order" element={<ConsumerOrder/>}/>
+          <Route path="/call_taxi" element={<CallTaxi/>}/>
       </Routes>
     </BrowserRouter>
   )
